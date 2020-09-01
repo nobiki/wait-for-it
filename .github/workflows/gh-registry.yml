@@ -1,0 +1,25 @@
+name: Build Dockerfile and Push Github Package Registry
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-push:
+
+    runs-on: ubuntu-18.04
+    timeout-minutes: 300
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Build Image
+      run: |
+        docker build -t wait-for-it:latest .
+
+    - name: Push to Github Package Registry
+      run: |
+        docker login docker.pkg.github.com -u nobiki -p ${{ secrets.GH_ACCESS_TOKEN }}
+        docker tag wait-for-it docker.pkg.github.com/nobiki/wait-for-it/wait-for-it:latest
+        docker push docker.pkg.github.com/nobiki/wait-for-it/wait-for-it:latest
